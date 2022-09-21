@@ -5,9 +5,9 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-// Whenever nest.js encounters any of decortors , it will know to execute
-app.useGlobalPipes(new ValidationPipe()); // Mandatory to enable pipes
+  // Whenever nest.js encounters any of decortors , it will know to execute
+  app.useGlobalPipes(new ValidationPipe()); // Mandatory to enable pipes
 
-await app.listen(3000);
+  await app.listen(3000);
 }
 bootstrap();
