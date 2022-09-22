@@ -19,6 +19,11 @@ import { TasksService } from './tasks.service';
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
+  @Get()
+  getTasks(@Query() filterDto:GetTasksFilterDto):Promise<Task[]>{
+  return this.tasksService.getTasks(filterDto);
+  }
+
   @Get('/:id')
   getTaskById(@Param('id') id: string): Promise<Task> {
     // Any async method returns promise
@@ -28,6 +33,19 @@ export class TasksController {
   @Post()
   createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
     return this.tasksService.createTask(createTaskDto);
+  }
+
+  @Delete('/:id')
+  deleteTask(@Param('id') id:string):Promise<void>{
+    return this.tasksService.deleteTask(id);
+  }
+
+  @Patch('/:id/status')
+  updateTaskStatus(
+    @Param('id') id: string,
+    @Body() updateTaskStatusDto: UpdateTaskStatusDto,
+  ): Promise<Task> {
+    return this.tasksService.updateTaskStatus(updateTaskStatusDto.status, id);
   }
 
   /*
