@@ -1,11 +1,45 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Task, TaskStatus } from './task.model';
-import { v4 as uuid } from 'uuid';
+import { InjectRepository } from '@nestjs/typeorm';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
+import { TaskStatus } from './task-status-enum';
+import { Task } from './task.entity';
+import { TasksRepository } from './tasks.repository';
 
 @Injectable()
 export class TasksService {
+  // First thing - Dependency Injection
+  constructor(
+    @InjectRepository(TasksRepository)
+    private tasksRepository: TasksRepository,
+  ) {}
+
+  // Whenever we interact with database i.e async operation
+  async getTaskById(id: string): Promise<Task> {
+    const found = await this.tasksRepository.findOne(id);
+
+    if (!found) {
+      throw new NotFoundException(`Task Not Found ${id} `);
+    }
+
+    return found;
+  }
+
+  async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
+    const { title, description } = createTaskDto;
+
+    const task = this.tasksRepository.create({
+      title,
+      description,
+      status: TaskStatus.OPEN,
+    });
+
+    await this.tasksRepository.save(task); // Await - since it is async operation
+
+    return task;
+  }
+
+  /* We donot need these methods as we are going to do everything with database
   private tasks: Task[] = [];
 
   getAllTasks() {
@@ -58,15 +92,15 @@ export class TasksService {
     /*const updated: Task[] = this.tasks.filter((t) => t.id !== id);
     this.tasks = updated;
     return updated;*/
-  }
-
+  //}
+  /*
   updateTaskStatus(status: TaskStatus, id: string): Task {
     const task = this.getTaskById(id);
     task.status = status;
     return task;
     /*this.tasks.find((task) => task.id === id).status = status;
     return this.tasks;*/
-  }
+  /*  }
 
   createTask(createTaskDto: CreateTaskDto): Task {
     const { title, description } = createTaskDto;
@@ -81,5 +115,5 @@ export class TasksService {
     this.tasks.push(task);
 
     return task;
-  }
+  }*/
 }
