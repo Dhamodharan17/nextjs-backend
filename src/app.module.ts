@@ -1,13 +1,10 @@
 import { Module } from '@nestjs/common';
 import {TypeOrmModule} from '@nestjs/typeorm';
-import { TasksModule } from './tasks/tasks.module';
-import { WorkerModule } from './Workers/workers.module';
 import { AuthModule } from './auth/auth.module';
+import { EmployeeModule } from './employee/employee.module';
 
 @Module({
   imports:[
-    TasksModule,
-    WorkerModule,
     TypeOrmModule.forRoot({
       type : 'postgres',
       host:'localhost',
@@ -18,7 +15,8 @@ import { AuthModule } from './auth/auth.module';
       autoLoadEntities:true,
       synchronize:true,
     }),
-    AuthModule,
+    EmployeeModule,
+    AuthModule
   ]
 })
 export class AppModule {}
