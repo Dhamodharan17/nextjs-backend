@@ -6,26 +6,24 @@ import { Task } from './task.entity';
 
 @EntityRepository(Task)
 export class TasksRepository extends Repository<Task> {
+  async getTasks(filterDto: GetTasksFilterDto): Promise<Task[]> {
+    const { status, search } = filterDto;
+    const query = this.createQueryBuilder('task');
 
-async getTasks(filterDto:GetTasksFilterDto):Promise<Task[]>{
+    if (status) {
+      query.andWhere('task.status= :status', { status: status }); // :status - variable
+    }
 
-const {status,search} = filterDto;
-const query = this.createQueryBuilder('task');
-
-if(status){
-    query.andWhere('task.status= :status',{status:status}) // :status - variable
-}
-
-if(search){
-    query.andWhere(
+    if (search) {
+      query.andWhere(
         'LOWER(task.title) LIKE LOWER(:search) OR LOWER(task.description) LIKE LOWER(:search)',
-        {search: `%${search}%`} // "Clean" % -> makes search in independent terms
-    )
-}
+        { search: `%${search}%` }, // "Clean" % -> makes search in independent terms
+      );
+    }
 
-const tasks = await query.getMany();
-return tasks;
-}
+    const tasks = await query.getMany();
+    return tasks;
+  }
 
   async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
     const { title, description } = createTaskDto;
